@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Math Operations</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      padding: 20px;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    input, button {
+      padding: 8px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    .output {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #006400;
+    }
+    .quiz-section {
+      background-color: #e6f7ff;
+      border-left: 6px solid #1890ff;
+    }
+    canvas {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Interactive Math Operations</h1>  <!-- Addition and Subtraction -->  <section>
+    <h2>Addition & Subtraction</h2>
+    <input type="number" id="add1" placeholder="First number" />
+    <input type="number" id="add2" placeholder="Second number" />
+    <button onclick="addSubtract()">Calculate</button>
+    <div class="output" id="addOutput"></div>
+  </section>  <!-- Multiplication and Division -->  <section>
+    <h2>Multiplication & Division</h2>
+    <input type="number" id="mul1" placeholder="First number" />
+    <input type="number" id="mul2" placeholder="Second number" />
+    <button onclick="multiplyDivide()">Calculate</button>
+    <div class="output" id="mulOutput"></div>
+  </section>  <!-- Percentages -->  <section>
+    <h2>Percentage</h2>
+    <input type="number" id="percentValue" placeholder="% (e.g., 25)" />
+    <input type="number" id="percentOf" placeholder="of what number?" />
+    <button onclick="calculatePercentage()">Find %</button>
+    <div class="output" id="percentOutput"></div>
+  </section>  <!-- Square Roots -->  <section>
+    <h2>Square Root</h2>
+    <input type="number" id="sqrtInput" placeholder="Enter a number" />
+    <button onclick="squareRoot()">Find √</button>
+    <div class="output" id="sqrtOutput"></div>
+  </section>  <!-- Powers -->  <section>
+    <h2>Powers (Exponents)</h2>
+    <input type="number" id="base" placeholder="Base" />
+    <input type="number" id="exponent" placeholder="Exponent" />
+    <button onclick="power()">Calculate Power</button>
+    <div class="output" id="powerOutput"></div>
+  </section>  <!-- Algebraic Operations -->  <section>
+    <h2>Algebraic Operation (ax + b = c)</h2>
+    <input type="number" id="a" placeholder="a (coefficient)" />
+    <input type="number" id="b" placeholder="b (constant)" />
+    <input type="number" id="c" placeholder="c (result)" />
+    <button onclick="solveAlgebra()">Solve for x</button>
+    <div class="output" id="algebraOutput"></div>
+  </section>  <!-- Quiz Section -->  <section class="quiz-section">
+    <h2>Quick Math Quiz</h2>
+    <p id="quizQuestion"></p>
+    <input type="number" id="quizAnswer" placeholder="Your answer" />
+    <button onclick="checkAnswer()">Submit</button>
+    <div class="output" id="quizResult"></div>
+  </section>  <!-- Chart Section -->  <section>
+    <h2>Result Visualization</h2>
+    <canvas id="resultChart"></canvas>
+  </section>  <script>
+    let chart;
+
+    function updateChart(label, value) {
+      if (!chart) {
+        const ctx = document.getElementById('resultChart').getContext('2d');
+        chart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: [label],
+            datasets: [{
+              label: 'Results',
+              data: [value],
+              backgroundColor: ['#4CAF50']
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+      } else {
+        chart.data.labels.push(label);
+        chart.data.datasets[0].data.push(value);
+        chart.update();
+      }
+    }
+
+    function addSubtract() {
+      let a = parseFloat(document.getElementById('add1').value);
+      let b = parseFloat(document.getElementById('add2').value);
+      let add = a + b;
+      let sub = a - b;
+      document.getElementById('addOutput').textContent = `Addition: ${add}, Subtraction: ${sub}`;
+      updateChart('Add', add);
+    }
+
+    function multiplyDivide() {
+      let a = parseFloat(document.getElementById('mul1').value);
+      let b = parseFloat(document.getElementById('mul2').value);
+      let result = `Multiplication: ${a * b}`;
+      updateChart('Multiply', a * b);
+      result += b !== 0 ? `, Division: ${a / b}` : ', Division: undefined (cannot divide by 0)';
+      if (b !== 0) updateChart('Divide', a / b);
+      document.getElementById('mulOutput').textContent = result;
+    }
+
+    function calculatePercentage() {
+      let percent = parseFloat(document.getElementById('percentValue').value);
+      let number = parseFloat(document.getElementById('percentOf').value);
+      let result = (percent / 100) * number;
+      document.getElementById('percentOutput').textContent = `${percent}% of ${number} = ${result}`;
+      updateChart('% Result', result);
+    }
+
+    function squareRoot() {
+      let num = parseFloat(document.getElementById('sqrtInput').value);
+      let result = num >= 0 ? Math.sqrt(num).toFixed(4) : 'undefined (cannot √ negative number in real numbers)';
+      document.getElementById('sqrtOutput').textContent = `√${num} = ${result}`;
+      if (num >= 0) updateChart('√', parseFloat(result));
+    }
+
+    function power() {
+      let base = parseFloat(document.getElementById('base').value);
+      let exp = parseFloat(document.getElementById('exponent').value);
+      let result = Math.pow(base, exp);
+      document.getElementById('powerOutput').textContent = `${base} ^ ${exp} = ${result}`;
+      updateChart('Power', result);
+    }
+
+    function solveAlgebra() {
+      let a = parseFloat(document.getElementById('a').value);
+      let b = parseFloat(document.getElementById('b').value);
+      let c = parseFloat(document.getElementById('c').value);
+      if (a === 0) {
+        document.getElementById('algebraOutput').textContent = 'a cannot be 0 in linear equation';
+      } else {
+        let x = (c - b) / a;
+        document.getElementById('algebraOutput').textContent = `x = ${x.toFixed(4)}`;
+        updateChart('x', x);
+      }
+    }
+
+    const questions = [
+      { q: 'What is 7 + 5?', a: 12 },
+      { q: 'What is 9 * 3?', a: 27 },
+      { q: 'What is the square root of 49?', a: 7 },
+      { q: 'Solve: 2x + 3 = 7', a: 2 }
+    ];
+    let currentQ = Math.floor(Math.random() * questions.length);
+    document.getElementById('quizQuestion').textContent = questions[currentQ].q;
+
+    function checkAnswer() {
+      let userAnswer = parseFloat(document.getElementById('quizAnswer').value);
+      if (userAnswer === questions[currentQ].a) {
+        document.getElementById('quizResult').textContent = 'Correct!';
+      } else {
+        document.getElementById('quizResult').textContent = `Wrong. Correct answer is ${questions[currentQ].a}`;
+      }
+      currentQ = Math.floor(Math.random() * questions.length);
+      document.getElementById('quizQuestion').textContent = questions[currentQ].q;
+      document.getElementById('quizAnswer').value = '';
+    }
+  </script></body>
+</html>
